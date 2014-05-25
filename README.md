@@ -2,6 +2,8 @@
 
 Puts your node web server behind a proxy, and restarts it when source files has changed. You know, for development productivity.
 
+`proxyreload` is work in progress.
+
 # Why?
 
 Existing tools usually doesn't work that well with OSX due to compatibility issues with `fs.watch` and
