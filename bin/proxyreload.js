@@ -48,24 +48,26 @@ var proxy = httpProxy.createProxyServer();
 proxyApp.use(function (req, res) {
 
   var start = new Date();
-  ready
-    .then(function () {
-      return appProcess.checkNeedsReload();
-    })
+  appProcess.checkNeedsReload()
     .then(function (needsReload) {
       console.log('Need to reload?', needsReload);
       if (needsReload) {
-        return ready = appProcess.restart();
+        return appProcess.restart();
       }
     })
+    .catch(showErr)
     .then(forward);
+
+  function showErr(e) {
+    res.send(502, "App has crashed... fix the bug and reload :)");
+  }
 
   function forward() {
     var target = url.parse(req.url);
     target.port = appProcessOpts.port;
     target.pathname = req.path;
     console.log("Had an additional overhead of %s ms", new Date().getTime() - start);
-    proxy.web(req, res, {target: target}, function () {
+    proxy.web(req, res, {target: target}, function (e) {
 
     });
   }
