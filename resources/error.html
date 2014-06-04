@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Error!</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      outline: 0;
+    }
+
+    body {
+      padding: 80px 40px;
+      background: #ECE9E9 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#ECE9E9));
+      background: #ECE9E9 -moz-linear-gradient(top, #fff, #ECE9E9);
+      background-repeat: no-repeat;
+      color: #555;
+      -webkit-font-smoothing: antialiased;
+    }
+    body, p {
+      font: 16px "Helvetica Neue", "Lucida Grande", "Arial";
+    }
+    p {
+      margin-top: 12px;
+      padding: 12px;
+    }
+    h1, h2 {
+      color: #343434;
+    }
+    h1 {
+      font-size: 22px;
+    }
+    h2 {
+      font-size: 16px;
+      margin-top: 26px;
+    }
+    #context {
+      padding: 12px 0;
+      margin-left: 10px;
+    }
+    #stacktrace {
+      padding: 20px 0;
+      margin-left: 10px;
+      font-size: 14px;
+    }
+    .functionName {
+      font-weight: bold;
+    }
+    .lineno {
+      color: #aaa;
+    }
+    .fileref {
+      color: #959789;
+    }
+    .errormarker {
+      color: #971d1d;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Oops, there was an error</h1>
+
+<h2><%= message %></h2>
+
+<pre id="context">
+<%- context %>
+</pre>
+<% if (stack) { %>
+  <pre id="stacktrace">
+  at <%- stack %>
+  </pre>
+<% } %>
+<% if (threwString) { %>
+<p>
+  Warning: The error appears to be a string.
+  <a href="http://www.devthought.com/2011/12/22/a-string-is-not-an-error/" target="_blank">A string should never be thrown</a>.
+  Use throw new Error("<%= message %>") instead.
+</p>
+<% } %>
+
+<p>Go fix it and hit reload!</p>
+
+</body>
+</html>

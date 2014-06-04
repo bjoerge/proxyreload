@@ -1,30 +1,26 @@
 var ModuleStats = require("./lib/module-stats");
 
-module.exports = function(opts) {
+module.exports = function (opts) {
   opts = opts || {};
 
-  var throttle = 'throttle' in opts ? opts.throttle : 0; 
-  var moduleStats = new ModuleStats({watchDir: process.cwd(), throttle: throttle});
+  var throttle = 'throttle' in opts ? opts.throttle : 0;
+  var moduleStats = new ModuleStats({throttle: throttle});
 
-  process.nextTick(function() {
-    moduleStats.update(Object.keys(require.cache));
+  var parent = opts.channel;
+
+  process.nextTick(updateKnown);
+
+  parent.handle('check', function () {
+    return moduleStats.check();
   });
-
-  process.on('message', function(message) {
-    switch(message) {
-      case 'check':
-        moduleStats.check(function(changed) {
-          console.log("No change!");
-          process.send(changed ? 'yes' : 'no');
-        });
-        return;
-    }
-  });  
 
   return function sync(req, res, next) {
     // Update known modules
-    moduleStats.update(Object.keys(require.cache));
-    next();
-  };    
+    updateKnown().then(function() {
+      next();
+    });
+  };
+  function updateKnown() {
+    return moduleStats.update(Object.keys(require.cache));
+  }
 };
-
