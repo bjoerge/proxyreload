@@ -1,6 +1,6 @@
 {
   "name": "proxyreload",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Puts your node web server behind a proxy, and restarts it when source files has changed. You know, for development productivity.",
   "main": "index.js",
   "bin": {
