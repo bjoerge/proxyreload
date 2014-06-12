@@ -28,11 +28,7 @@ channel.handle('start', function (options) {
         var trace = stackTrace.parse(e);
         var error = new Error();
         error.message = e.message;
-        error.stack = e.stack.split("\n").filter(function(line, i) {
-          if (i == 0) return true;
-          // Include only the line that failed from the app
-          return line.indexOf(options.app) > -1;
-        }).join("\n");
+        error.stack = e.stack;
         reject(error);
       }
       resolve();
