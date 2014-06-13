@@ -13,6 +13,7 @@
     "cli-color": "^0.3.2",
     "commander": "^2.2.0",
     "ejs": "^1.0.0",
+    "escape-html": "^1.0.1",
     "express": "^4.3.0",
     "getport": "^0.1.0",
     "http-proxy": "^1.1.4",

@@ -18,21 +18,19 @@ channel.handle('start', function (options) {
   }));
 
   return new Promise(function (resolve, reject) {
-    process.nextTick(function() {
-      try {
-        wrapper.use(require(options.app));
-        wrapper.use(require("../lib/errorhandler"))
-      }
-      catch(e) {
-        var stackTrace = require('stack-trace');
-        var trace = stackTrace.parse(e);
-        var error = new Error();
-        error.message = e.message;
-        error.stack = e.stack;
-        reject(error);
-      }
-      resolve();
-    });
+    try {
+      wrapper.use(require(options.app));
+      wrapper.use(require("../lib/errorhandler"))
+    }
+    catch(e) {
+      var stackTrace = require('stack-trace');
+      var trace = stackTrace.parse(e);
+      var error = new Error();
+      error.message = e.message;
+      error.stack = e.stack;
+      reject(error);
+    }
+    resolve();
   })
     .then(function () {
       return getPort(options.port, options.port + 100);
