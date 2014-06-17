@@ -6,6 +6,7 @@ var Promise = require('bluebird');
 var express = require('express');
 var url = require('url');
 var httpProxy = require('http-proxy');
+var log = require("../lib/log");
 
 Promise.onPossiblyUnhandledRejection();
 
@@ -28,8 +29,6 @@ var appProcess = new AppProcess({
   port: 60000,
   throttle: program.throttle
 });
-
-var log = require("../lib/log");
 
 appProcess.on('log', function (logEvent) {
   log[logEvent.type]("%s", logEvent.message);
