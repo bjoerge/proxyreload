@@ -44,10 +44,7 @@ proxyApp.use(function (req, res, next) {
     .maybeRestart()
     .then(function forward(appServer) {
       log.info("=> %s %s (+%sms)", req.method, req.url, new Date().getTime()-start);
-      var target = url.parse(req.url);
-      target.port = appServer.port;
-      target.pathname = req.path;
-      //log.info("Had an additional overhead of %s ms", new Date().getTime() - start);
+      var target = {port: appServer.port};
       proxy.web(req, res, {target: target}, function (e) {
         // Ignore socket hang up errors
         if (e && !e.code === 'ECONNRESET') next(e)
