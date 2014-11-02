@@ -16,7 +16,7 @@
     "escape-html": "^1.0.1",
     "express": "^4.3.0",
     "getport": "^0.1.0",
-    "http-proxy": "^1.1.4",
+    "http-proxy": "^1.6.0",
     "lodash.difference": "^2.4.1",
     "pretty-ms": "^1.0.0",
     "stack-trace": "0.0.9"
