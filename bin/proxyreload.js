@@ -7,6 +7,7 @@ var express = require('express');
 var url = require('url');
 var httpProxy = require('http-proxy');
 var log = require("../lib/log");
+var prettyMs = require("pretty-ms");
 
 Promise.onPossiblyUnhandledRejection();
 
@@ -43,11 +44,20 @@ proxyApp.use(function (req, res, next) {
   return appProcess
     .maybeRestart()
     .then(function forward(appServer) {
-      log.info("=> %s %s (+%sms)", req.method, req.url, new Date().getTime()-start);
+      var reqStart = new Date().getTime();
       var target = {port: appServer.port};
       proxy.web(req, res, {target: target}, function (e) {
         // Ignore socket hang up errors
         if (e && !e.code === 'ECONNRESET') next(e)
+      });
+
+      res.on('finish', function () {
+        var now = new Date().getTime();
+        var totalDuration = now - start;
+        var requestDuration = now - reqStart;
+        // request overhead caused by proxyreload
+        var overhead = totalDuration - requestDuration;
+        log.info("=> %s %s (%s +%s)", req.method, req.url, prettyMs(requestDuration), prettyMs(overhead));
       });
     })
     .catch(next);
