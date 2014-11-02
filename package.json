@@ -6,6 +6,10 @@
   "bin": {
     "proxyreload": "./bin/proxyreload.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bjoerge/proxyreload.git"
+  },
   "author": "Bjørge Næss",
   "license": "MIT",
   "dependencies": {
