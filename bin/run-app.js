@@ -11,23 +11,19 @@ var channel = new Channel(process);
 
 channel.handle('start', function (options) {
 
-  var wrapper = express().use(require("..")({
+  var wrapper = express();
+  wrapper.use(require("..")({
     channel: channel,
     throttle: options.throttle
   }));
-
   return new Promise(function (resolve, reject) {
     try {
       wrapper.use(require(options.app));
-      wrapper.use(require("../lib/errorhandler"))
-    }
-    catch(e) {
-      var stackTrace = require('stack-trace');
-      var trace = stackTrace.parse(e);
-      var error = new Error();
-      error.message = e.message;
-      error.stack = e.stack;
-      reject(error);
+    } catch(e) {
+      var lines = e.stack.split("\n");
+      lines.splice(1, 0, "    at require ("+options.app+":0:0)")
+      e.stack = lines.join("\n");
+      reject(e);
     }
     resolve();
   })
@@ -36,6 +32,7 @@ channel.handle('start', function (options) {
     })
     .then(function (port) {
       return new Promise(function (resolve, reject) {
+        wrapper.use(require("../lib/errorhandler"));
         wrapper.listen(options.port, function (err) {
           if (err) {
             reject(err);
