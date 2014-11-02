@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 var path = require('path');
-var program = require('commander');
 var express = require('express');
 var Channel = require("../lib/channel");
 var Promise = require("bluebird");
