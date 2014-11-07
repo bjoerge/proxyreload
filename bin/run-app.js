@@ -33,7 +33,7 @@ channel.handle('start', function (options) {
     .then(function (port) {
       return new Promise(function (resolve, reject) {
         wrapper.use(require("../lib/errorhandler"));
-        wrapper.listen(options.port, function (err) {
+        wrapper.listen(port, function (err) {
           if (err) {
             reject(err);
           }
