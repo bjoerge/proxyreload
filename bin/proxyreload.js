@@ -9,12 +9,12 @@ var httpProxy = require('http-proxy');
 var log = require("../lib/log");
 var prettyMs = require("pretty-ms");
 
-Promise.onPossiblyUnhandledRejection();
+var getPort = Promise.promisify(require("getport"));
 
 program
   .version(require("../package.json").version)
   .usage('[options] <app.js>')
-  .option('-p, --port <n>', 'run the proxy on this port. This is the port you will access your app at (default 3000)', Number, 3000)
+  .option('-p, --port <n>', 'run the proxy on this port. This is the port you will find your app at (default 3000)', Number, 3000)
   .option('-s, --silent', "don't output proxyreload logging", Boolean, false)
   .option('-t, --throttle <n>ms', 'don\'t check for changes if its less than this value (in ms) since previous check', Number, 0)
   .parse(process.argv);
@@ -25,25 +25,32 @@ program
 
 var AppProcess = require("../lib/app-process.js");
 
-var appProcess = new AppProcess({
-  app: path.join(process.cwd(), program.args[0]),
-  port: 60000,
-  throttle: program.throttle
-});
+function createAppProcess() {
+  var start = 60000+Math.floor(Math.random() * 100);
+  return getPort(start, start+100).then(function(port) {
+    var appProcess = new AppProcess({
+      app: path.join(process.cwd(), program.args[0]),
+      port: 60000,
+      throttle: program.throttle
+    });
 
-appProcess.on('log', function (logEvent) {
-  log[logEvent.type]("%s", logEvent.message);
-});
+    appProcess.on('log', function (logEvent) {
+      log[logEvent.type]("%s", logEvent.message);
+    });
+    return appProcess
+  });
+}
 
 var proxyApp = express();
 var proxy = httpProxy.createProxyServer();
 
+var appProcessCreated = createAppProcess();
+
 // Middleware for handling all incoming requests
 proxyApp.use(function (req, res, next) {
   var start = new Date().getTime();
-  return appProcess
-    .maybeRestart()
-    .then(function forward(appServer) {
+  return appProcessCreated.then(function(appProcess) {
+    appProcess.maybeRestart().then(function forward(appServer) {
       var reqStart = new Date().getTime();
       var target = {port: appServer.port};
       proxy.web(req, res, {target: target}, function (e) {
@@ -61,6 +68,7 @@ proxyApp.use(function (req, res, next) {
       });
     })
     .catch(next);
+  });
 });
 
 proxyApp.use(require("../lib/errorhandler"));
