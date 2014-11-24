@@ -16,14 +16,42 @@ channel.handle('start', function (options) {
     channel: channel,
     throttle: options.throttle
   }));
+
   return new Promise(function (resolve, reject) {
+    var app;
     try {
-      wrapper.use(require(options.app));
+      app = require(options.app)
     } catch(e) {
-      var lines = e.stack.split("\n");
-      lines.splice(1, 0, "    at require ("+options.app+":0:0)")
-      e.stack = lines.join("\n");
-      reject(e);
+
+      // Traceur throws an *array* of error strings, wtf.
+      if (Array.isArray(e)) {
+        var onlyStrings = !e.some(function(err) {
+          return typeof err != 'string'
+        });
+        if (onlyStrings) {
+          e = e.join("\n");
+        }
+        else {
+          e = e[0]
+        }
+      }
+
+      if (e.stack && typeof e.stack === 'string') {
+        var lines = e.stack.split("\n");
+        lines.push("    at require ("+options.app+":0:0)")
+        e.stack = lines.join("\n");
+        reject(e);
+      }
+      else {
+        e = new Error(e);
+        e.stack = "";
+        reject(e);
+      }
+
+    }
+
+    if (app) {
+      wrapper.use(app);
     }
     resolve();
   })
