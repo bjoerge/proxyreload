@@ -42,6 +42,7 @@ function createAppProcess() {
 }
 
 var proxyApp = express();
+proxyApp.disable('x-powered-by');
 var proxy = httpProxy.createProxyServer();
 
 var appProcessCreated = createAppProcess();

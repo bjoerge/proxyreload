@@ -12,6 +12,7 @@ var channel = new Channel(process);
 channel.handle('start', function (options) {
 
   var wrapper = express();
+  wrapper.disable('x-powered-by');
   wrapper.use(require("..")({
     channel: channel,
     throttle: options.throttle
