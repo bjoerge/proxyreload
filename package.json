@@ -20,6 +20,7 @@
     "escape-html": "^1.0.1",
     "express": "^4.3.0",
     "getport": "^0.1.0",
+    "graceful-fs": "^3.0.6",
     "http-proxy": "^1.6.0",
     "lodash.difference": "^2.4.1",
     "pretty-ms": "^1.0.0",
